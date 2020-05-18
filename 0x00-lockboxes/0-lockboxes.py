@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """boxopen"""
 
+
 def canUnlockAll(boxes):
 
     opened_boxes = [0]
