@@ -1,90 +1,46 @@
 #!/usr/bin/python3
-"""
-N-queens
-"""
+
+import sys
 
 
-class QueenChessBoard:
-    def __init__(self, size):
-        self.size = size
-        self.columns = []
+def nqueens(queens, xy_diff, xy_sum):
+    """Finds all valid queen column positions that don't attack each other
 
-    def place_in_next_row(self, column):
-        self.columns.append(column)
-
-    def remove_in_current_row(self):
-        return self.columns.pop()
-
-    def is_this_column_safe_in_next_row(self, column):
-        row = len(self.columns)
-        for queen_column in self.columns:
-            if column == queen_column:
-                return False
-
-        for queen_row, queen_column in enumerate(self.columns):
-            if queen_column - queen_row == column - row:
-                return False
-
-        for queen_row, queen_column in enumerate(self.columns):
-            if ((self.size - queen_column) - queen_row ==
-                    (self.size - column) - row):
-                return False
-
-        return True
-
-    def display(self):
-        lista = []
-        for row in range(self.size):
-            for column in range(self.size):
-                if column == self.columns[row]:
-                    lista.append([row, column])
-        print(lista, end='')
+    Args:
+        queens: columns occupied by queens
+        xy_diff: positive slope diagonals occupied by queens
+        xy_sum: negative slope diagonals occupied by queens
+    """
+    p = len(queens)
+    if p == n:
+        queen_col.append(queens)
+        return None
+    for q in range(n):
+        if q not in queens and p - q not in xy_diff and p + q not in xy_sum:
+            nqueens(queens + [q], xy_diff + [p - q], xy_sum + [p + q])
 
 
-def solve_queen(size):
-    board = QueenChessBoard(size)
-    number_of_solutions = 0
-    row = 0
-    column = 0
-
-    while True:
-        while column < size:
-            if board.is_this_column_safe_in_next_row(column):
-                board.place_in_next_row(column)
-                row += 1
-                column = 0
-                break
-            else:
-                column += 1
-
-        if (column == size or row == size):
-            if row == size:
-                board.display()
-                print()
-                number_of_solutions += 1
-                board.remove_in_current_row()
-                row -= 1
-
-            try:
-                prev_column = board.remove_in_current_row()
-            except IndexError:
-                break
-
-            row -= 1
-            column = 1 + prev_column
-
-
-if __name__ == "__main__":
-    import sys
-
+def parse_argv():
+    """Checks for usage errors"""
     if len(sys.argv) != 2:
         print("Usage: nqueens N")
         sys.exit(1)
-    if sys.argv[1].isdigit() is False:
+    if not sys.argv[1].isdigit():
         print("N must be a number")
         sys.exit(1)
-    if int(sys.argv[1]) < 4:
+    n = int(sys.argv[1])
+    if n < 4:
         print("N must be at least 4")
         sys.exit(1)
+    return n
 
-    solve_queen(int(sys.argv[1]))
+
+if __name__ == "__main__":
+    n = parse_argv()
+    queen_col = []
+    nqueens([], [], [])
+    for row in range(len(queen_col)):
+        queen_pos = []
+        for col in range(len(queen_col[row])):
+            queen_pos.append([col, queen_col[row][col]])
+        print(queen_pos)
