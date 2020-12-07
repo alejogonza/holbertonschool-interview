@@ -1,113 +1,77 @@
 #include "sort.h"
 
-void sift_down(int *array, size_t start, size_t end, size_t size);
-void swap_elem(int *arr, size_t size, int *a, int *b);
-
+#define UP(x) ((x - 1) / 2)
+#define LEFT(x) (2 * x + 1)
+#define RIGHT(x) (2 * x + 2)
 
 /**
- * sift_down - Builds heap form bottom up
- *
- * @array: List to be sorted
- * @start: Subscript of the root ot the heap
- * @size: Size of array
- * @end: Subscript of the last element of the heap
+ * heap_sort - uses heapify sift-down to sort A in-place
+ * @A: A to sort in-place
+ * @size: size of A
  */
-void sift_down(int *array, size_t start, size_t end, size_t size)
+void heap_sort(int *A, size_t size)
 {
-	size_t root, child, swap;
+	size_t len = size;
 
-	root = start;
-
-	while ((root * 2) + 1 <= end)
-	{
-		/* Subscript of left child */
-		child = (root * 2) + 1;
-		swap = root;
-
-		if (array[swap] < array[child])
-		{
-			/* Swap root and left child */
-			swap = child;
-		}
-		if (child + 1 <= end && array[swap] < array[child + 1])
-		{
-			/* Swap root with right child */
-			swap = child + 1;
-		}
-		/* If one child is greater than other */
-		if (swap != root)
-		{
-			swap_elem(array, size, &array[root], &array[swap]);
-			root = swap;
-		}
-		else
-		{
-			return;
-		}
-	}
+	if (size < 2)
+		return;
+	heapify(A, size);
+	while (len > 1)
+		swap(A, 0, len - 1, size),
+		sift_down(A, 0, --len, size);
 }
 
-
 /**
- * heapify - Arranges heap so largest number is root
- * @array: array (for print)
- * @size: size of array (for print)
+ * heapify - turns array into max heap
+ * @A: pointer to array
+ * @size: size of array
  */
-void heapify(int *array, size_t size)
+void heapify(int *A, size_t size)
 {
-	int start;
-
-	/* Last non-leaf */
-	start = (size / 2) - 1;
+	ssize_t start = UP(size - 1);
 
 	while (start >= 0)
-	{
-		sift_down(array, start, size - 1, size);
-		start--;
-	}
+		sift_down(A, start--, size, size);
 }
 
-
 /**
- * heap_sort - Sort list in ascending order
- * @array: Array to be sorted
- * @size: Size of the array
- * Return: Void
+ * sift_down - performs heap sift-down operation
+ * @A: pointer to array
+ * @start: starting index
+ * @len: current length of heap
+ * @size: size of array
  */
-void heap_sort(int *array, size_t size)
+void sift_down(int *A, size_t start, size_t	len, size_t size)
 {
-	size_t last;
+	size_t root = start, temp = root;
 
-	if (!array || size < 2)
+	while (LEFT(root) < len)
 	{
-		return;
-	}
-
-	last = size - 1;
-
-	heapify(array, size);
-
-	while (last > 0)
-	{
-		swap_elem(array, size, &array[last], &array[0]);
-		last--;
-		sift_down(array, 0, last, size);
+		temp = root;
+		if (A[LEFT(root)] > A[root])
+			temp = LEFT(root);
+		if (RIGHT(root) < len &&
+			A[RIGHT(root)] > A[temp])
+			temp = RIGHT(root);
+		if (temp == root)
+			break;
+		swap(A, root, temp, size);
+		root = temp;
 	}
 }
 
 /**
- * swap_elem - swap value of array elements
- * @array: array (for print)
- * @size: size of array (for print)
- * @a: pointer to array element
- * @b: pointer to array element
+ * swap - swaps two elements in array
+ * @A: pointer to array
+ * @a: index of first element
+ * @b: index of second element
+ * @size: size of array
  */
-void swap_elem(int *array, size_t size, int *a, int *b)
+inline void swap(int *A, size_t a, size_t b, size_t size)
 {
-	int temp;
+	int temp = A[a];
 
-	temp = *a;
-	*a = *b;
-	*b = temp;
-	print_array(array, size);
+	A[a] = A[b];
+	A[b] = temp;
+	print_array(A, size);
 }
